@@ -1,6 +1,5 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-
 from like.models import Like
 from like.serializers import LikeSerializer
 from post.models import Post
