@@ -11,11 +11,10 @@ from post.models import Post
 from . import serializers
 from .permissions import IsAuthorOrAdmin, IsAuthor
 
+
 # class StandartResultPagination(PageNumberPagination):
 #     page_size = 2
 #     page_query_param = 'page'
-
-
 
 
 class PostViewSet(ModelViewSet):
@@ -24,7 +23,6 @@ class PostViewSet(ModelViewSet):
     filter_backends = (SearchFilter, DjangoFilterBackend)
     search_fields = ('title',)
     filterset_fields = ('owner', 'category')
-
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -47,15 +45,12 @@ class PostViewSet(ModelViewSet):
         # но создвать только залогинаный пользователь
         return [permissions.IsAuthenticatedOrReadOnly()]
 
-
-
     @action(['GET'], detail=True)
     def comments(self, request, pk):
         post = self.get_object()
         comments = post.comments.all()
         serializer = serializers.CommentSerializer(instance=comments, many=True)
         return Response(serializer.data, status=200)
-
 
     # .../api/v1/posts/<id>/likes/
     @action(['GET'], detail=True)
@@ -86,13 +81,10 @@ class PostViewSet(ModelViewSet):
     #         return Response('Post not found!', status=404)
 
 
-
-
-
-
 class PostListCreateView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
@@ -104,15 +96,13 @@ class PostListCreateView(generics.ListCreateAPIView):
 
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
-    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_serializer_class(self):
         if self.request.method in ('PUT', 'PATCH'):
             return serializers.PostCreateSerializer
         return serializers.PostDetailSerializer
-
-
 
     def get_permissions(self):
         if self.request.method == 'DELETE':

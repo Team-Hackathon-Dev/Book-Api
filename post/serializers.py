@@ -23,6 +23,7 @@ class PostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'owner', 'category', 'preview', 'owner_username', 'category_name')
+
     @staticmethod
     def is_liked(post, user):
         return user.likes.filter(post=post).exists()
@@ -71,15 +72,11 @@ class PostDetailSerializer(serializers.ModelSerializer):
         return repr
 
 
-
-
-
 class PostCreateSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(
         required=True, queryset=Category.objects.all()
     )
     images = PostImagesSerializer(many=True, required=False)
-
 
     class Meta:
         model = Post

@@ -22,4 +22,3 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'Destroy':
             return IsAuthorOrAdminOrPostOwner(),
         return permissions.AllowAny(),
-

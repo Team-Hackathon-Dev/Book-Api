@@ -5,15 +5,13 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('', views.PostViewSet)
-            #api/v1/posts/ - GET(list), POST(create)
-            #api/v1/posts/<id>/  - GET(retivie)
-
-
+# api/v1/posts/ - GET(list), POST(create)
+# api/v1/posts/<id>/  - GET(retivie)
 
 
 urlpatterns = [
 
-      path('', include(router.urls)),
-#     path('', views.PostListCreateView.as_view()),
-#     path('<int:pk>/', views.PostDetailView.as_view()),
+    path('', include(router.urls)),
+    #     path('', views.PostListCreateView.as_view()),
+    #     path('<int:pk>/', views.PostDetailView.as_view()),
 ]
