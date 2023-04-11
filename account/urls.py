@@ -10,3 +10,14 @@ urlpatterns = [
     path('forgot/', views.ForgotPasswordView.as_view()),
     path('refresh/', TokenRefreshView.as_view()),
 ]
+
+#TODO CRUD
+#TODO category
+#TODO Post
+#TODO title
+#TODO descrip
+#TODO image
+#TODO book download
+#TODO like
+#TODO comment
+#TODO permissions
