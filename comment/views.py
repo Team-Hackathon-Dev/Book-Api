@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics, permissions
 from post.permissions import IsAuthorOrAdminOrPostOwner
 from .models import Comment
