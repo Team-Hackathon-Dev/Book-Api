@@ -47,6 +47,11 @@ INSTALLED_APPS = [
     'ckeditor',
     # install my apps
     'account',
+    'category',
+    'comment',
+    'favorite',
+    'like',
+    'post',
 ]
 
 MIDDLEWARE = [
