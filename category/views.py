@@ -14,12 +14,12 @@ class CategoryCreateListView(generics.ListAPIView):
         return permissions.AllowAny(),
 
 
-class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all()
-    serializer_class = (permissions.IsAdminUser,)
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return permissions.AllowAny(),
-
-        return permissions.IsAdminUser(),
+# class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Category.objects.all()
+#     serializer_class = (permissions.IsAdminUser,)
+#
+#     def get_permissions(self):
+#         if self.request.method == 'GET':
+#             return permissions.AllowAny(),
+#
+#         return permissions.IsAdminUser(),

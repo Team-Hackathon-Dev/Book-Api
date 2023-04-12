@@ -1,95 +1,37 @@
-from rest_framework import serializers
 from comment.serializers import CommentSerializer
-from category.models import Category
-from .models import Post, PostImages
 from like.serializers import LikeSerializer
-
-
-class PostImagesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostImages
-        fields = '__all__'
-
-
-class PostListSerializer(serializers.ModelSerializer):
-    owner_username = serializers.ReadOnlyField(
-        source='owner.username'
-    )
-    category_name = serializers.ReadOnlyField(
-        source='category.name'
-    )
-
-
-    class Meta:
-        model = Post
-        fields = ('id', 'title', 'owner', 'category', 'preview', 'owner_username', 'category_name')
-
-    @staticmethod
-    def is_liked(post, user):
-        return user.likes.filter(post=post).exists()
-
-    def to_representation(self, instance):
-        repr = super().to_representation(instance)
-        repr['likes_count'] = instance.likes.count()
-        user = self.context['request'].user
-        if user.is_authenticated:
-            repr['is_liked'] = self.is_liked(instance, user)
-        return repr
-
-
-class PostDetailSerializer(serializers.ModelSerializer):
-    owner_username = serializers.ReadOnlyField(
-        source='owner.username'
-    )
-    category_name = serializers.ReadOnlyField(
-        source='category.name'
-    )
-    comments = CommentSerializer(many=True)
-
-    class Meta:
-        model = Post
-        fields = '__all__'
-
-    @staticmethod
-    def is_liked(post, user):
-        return user.likes.filter(post=post).exists()
-
-    @staticmethod
-    def is_favorite(post, user):
-        return user.favorites.filter(post=post).exists()
-
-
-    def to_representation(self, instance):
-        repr = super().to_representation(instance)
-        repr['comments_count'] = instance.comments.count()
-        repr['comments'] = CommentSerializer(instance=instance.comments.all(), many=True).data
-        repr['likes_count'] = instance.likes.count()
-        repr['liked_users'] = LikeSerializer(instance=instance.likes.all(), many=True).data
-        user = self.context['request'].user
-        if user.is_authenticated:
-            repr['is_liked'] = self.is_liked(instance, user)
-            repr['is_favorite'] = self.is_favorite(instance, user)
-        return repr
+from rest_framework import serializers
+from .models import Post
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
-    category = serializers.PrimaryKeyRelatedField(
-        required=True, queryset=Category.objects.all()
-    )
-    images = PostImagesSerializer(many=True, required=False)
+    owner = serializers.ReadOnlyField(source='owner.username')
+    like_count = serializers.IntegerField(read_only=True)
+
+    @staticmethod
+    def is_liked(post, user):
+        return user.likes.filter(post=post).exists()
 
     class Meta:
         model = Post
-        fields = ('title', 'body', 'category',
-                  'preview', 'images')
+        fields = ['id', 'category', 'title', 'body', 'owner', 'like_count', 'created_at', 'updated_at', 'photo', 'pdf']
 
     def create(self, validated_data):
-        # print(self, '!!!!!!!')
-        request = self.context.get('request')
-        # print(validated_data, '********************')
-        # print(request.FILES.getlist('images'), '!!!!!!!!!!!')
-        post = Post.objects.create(**validated_data)
-        images_data = request.FILES.getlist('images')
-        for image in images_data:
-            PostImages.objects.create(image=image, post=post)
-        return post
+        return Post.objects.create(owner=self.context['request'].user, **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.body = validated_data.get('body', instance.body)
+        # instance.photo = validated_data.get('photo', instance.photo)
+        # instance.pdf = validated_data.get('pdf', instance.pdf)
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['likes_count'] = instance.likes.count()
+        repr['liked_users'] = LikeSerializer(instance=instance.likes.all(), many=True).data
+        repr['comments_count'] = instance.comments.count()
+        repr['comments'] = CommentSerializer(instance=instance.comments.all(), many=True).data
+        return repr
+
