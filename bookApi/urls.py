@@ -24,11 +24,11 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    # path('favorites/', include('favorite.urls')),
+    path('favorites/', include('favorite.urls')),
     path('accounts/', include('account.urls')),
     path('category/', include('category.urls')),
     path('comments/', include('comment.urls')),
-    path('', include('post.urls')),
+    path('posts/', include('post.urls')),
     path('likes/', include('like.urls')),
 
 ]

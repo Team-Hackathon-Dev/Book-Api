@@ -7,7 +7,7 @@ class Post(models.Model):
     title = models.CharField(max_length=250)
     body = models.TextField(max_length=1000)
     owner = models.ForeignKey(CustomUser, related_name='posts', on_delete=models.CASCADE, null=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=False, related_name='posts')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, related_name='posts')
     pdf = models.FileField(upload_to='pdf', null=True)
     photo = models.ImageField(upload_to='images/', null=True)
     created_at = models.DateTimeField(auto_now_add=True)

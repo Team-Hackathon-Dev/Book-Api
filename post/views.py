@@ -1,28 +1,28 @@
 from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from .models import Post
-from .serializers import PostCreateSerializer
+from . import serializers
+from .permissions import IsAuthorOrAdmin, IsAuthor
 
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
-    serializer_class = PostCreateSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.owner != self.request.user:
-            return Response({"error": "You don't have permission to delete this post."},
-                            status=status.HTTP_403_FORBIDDEN)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        if instance.owner != self.request.user:
-            return Response({"error": "You don't have permission to edit this post."}, status=status.HTTP_403_FORBIDDEN)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.PostListSerializer
+        elif self.action in 'create':
+            return serializers.PostCreateSerializer
+        elif self.action in ('update', 'partial_update'):
+            return serializers.PostUpdateSerializer
+        return serializers.PostListSerializer
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [permissions.IsAuthenticated(), IsAuthorOrAdmin()]
+        elif self.action in ('update', 'partial_update'):
+            return [permissions.IsAuthenticated(), IsAuthor()]
+        return [permissions.IsAuthenticatedOrReadOnly()]
