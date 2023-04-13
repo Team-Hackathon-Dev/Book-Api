@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
+from account.models import CustomUser
+
 User = get_user_model()
 
 
@@ -62,6 +64,8 @@ class ForgotPasswordSerializer(serializers.Serializer):
         'bad_code': _('Code is expired or invalid!')
     }
 
+
+
     def validate(self, attrs):
         self.forgot_password_reset = attrs['forgot_password_reset']
         password2 = attrs.pop('password2')
@@ -87,3 +91,6 @@ class ForgotPasswordSerializer(serializers.Serializer):
             user.save()
         except User.DoesNotExist:
             self.fail('bad_password')
+
+
+

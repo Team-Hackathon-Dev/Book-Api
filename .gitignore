@@ -8,6 +8,9 @@ media
 .idea
 .env
 dump.rdb
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
 
 
 # Backup files #

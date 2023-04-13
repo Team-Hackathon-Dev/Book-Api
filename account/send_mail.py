@@ -1,9 +1,11 @@
 from django.core.mail import send_mail
+from decouple import config
 
 
 # activation send link
 def send_confirmation_email(user, code):
-    full_link = f'http://localhost:8000/api/v1/accounts/activate/{code}'
+    link = config('SEND_IP')
+    full_link = f'http://{link}/accounts/activate/{code}'
     send_mail(
         'Здравствуйте, активируйте ваш аккаунт',
         f'Чтобы активировать аккаунт, нужно перейти по ссылке:'

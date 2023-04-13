@@ -59,15 +59,21 @@ class ForgotPasswordView(APIView):
 
     @staticmethod
     def post(request):
-        email = request.data['email']
-        # assert '@' in email
-        user = CustomUser.objects.get(email=email)
-        if user.forgot_password_reset != '':
-            return Response({'msg': 'проверьте почту!'}, status=201)
-        user.forgot_password_reset = uuid.uuid4()
-        user.save()
-        send_password(user.email, user.forgot_password_reset)
-        return Response({'msg': 'код для сброса отправлен на почту!'}, status=200)
+        email = request.data.get('email')
+        if not email:
+            return Response({'msg': 'Необходимо предоставить адрес электронной почты'}, status=400)
+
+        try:
+            assert '@' in email
+            user = CustomUser.objects.get(email=email)
+            if user.forgot_password_reset != '':
+                return Response({'msg': 'проверьте почту!'}, status=201)
+            user.forgot_password_reset = uuid.uuid4()
+            user.save()
+            send_password(user.email, user.forgot_password_reset)
+            return Response({'msg': 'код для сброса отправлен на почту!'}, status=200)
+        except:
+            return Response({'msg': 'Такого аккаунта не существует'}, status=404)
 
     @staticmethod
     def put(request):
@@ -79,3 +85,5 @@ class ForgotPasswordView(APIView):
         except User.DoesNotExist:
             return Response({'неверный код'}, status=400)
         return Response({'Поздравляю вы успешно поменяли свой пароль'}, status=201)
+
+
