@@ -18,7 +18,7 @@ class PostViewSet(ModelViewSet):
             return serializers.PostCreateSerializer
         elif self.action in ('update', 'partial_update'):
             return serializers.PostUpdateSerializer
-        return serializers.PostListSerializer
+        return serializers.PostDetailSerializer
 
     def get_permissions(self):
         if self.action == 'destroy':
