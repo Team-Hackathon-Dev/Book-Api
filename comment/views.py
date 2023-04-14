@@ -16,7 +16,7 @@ class CommentCreateView(generics.ListCreateAPIView):
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
-    serializers_class = CommentSerializer
+    serializers_class = serializers.CommentSerializer
 
     def get_permissions(self):
         if self.request.method == 'Destroy':

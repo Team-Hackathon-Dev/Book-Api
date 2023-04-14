@@ -10,7 +10,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'body', 'category')
+        fields = ('title', 'body', 'category', 'price', 'images', 'pdf')
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -22,7 +22,7 @@ class PostUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'body', 'category')
+        fields = ('title', 'body', 'category', 'price')
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
@@ -37,7 +37,34 @@ class PostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'body', 'owner', 'category', 'owner_username', 'category_name', 'photo', 'pdf')
+        fields = ('id', 'title', 'category_name', 'owner_username', 'images', 'price')
+
+    @staticmethod
+    def is_liked(post, user):
+        return user.likes.filter(post=post).exists()
+
+    @staticmethod
+    def is_favorite(post, user):
+        return user.favorites.filter(post=post).exists()
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['likes_count'] = instance.likes.count()
+        repr['comments_count'] = instance.comments.count()
+        user = self.context['request'].user
+        if user.is_authenticated:
+            repr['is_liked'] = self.is_liked(instance, user)
+            repr['is_favorite'] = self.is_favorite(instance, user)
+        return repr
+
+
+class PostDetailSerializer(serializers.ModelSerializer):
+    owner_username = serializers.ReadOnlyField(source='owner.username')
+    category_name = serializers.ReadOnlyField(source='category.name')
+
+    class Meta:
+        model = Post
+        fields = '__all__'
 
     @staticmethod
     def is_liked(post, user):
@@ -54,7 +81,6 @@ class PostListSerializer(serializers.ModelSerializer):
         repr['comments_count'] = instance.comments.count()
         repr['comments'] = CommentSerializer(instance=instance.comments.all(), many=True).data
         user = self.context['request'].user
-        print(user)
         if user.is_authenticated:
             repr['is_liked'] = self.is_liked(instance, user)
             repr['is_favorite'] = self.is_favorite(instance, user)
