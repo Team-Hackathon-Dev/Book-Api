@@ -10,7 +10,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'body', 'category', 'price')
+        fields = ('title', 'body', 'category', 'price', 'images', 'pdf')
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -37,7 +37,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'category_name', 'owner_username', 'photo', 'price')
+        fields = ('id', 'title', 'category_name', 'owner_username', 'images', 'price')
 
     @staticmethod
     def is_liked(post, user):
