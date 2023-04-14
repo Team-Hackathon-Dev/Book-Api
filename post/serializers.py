@@ -52,7 +52,6 @@ class PostListSerializer(serializers.ModelSerializer):
         repr['likes_count'] = instance.likes.count()
         repr['comments_count'] = instance.comments.count()
         user = self.context['request'].user
-        print(user)
         if user.is_authenticated:
             repr['is_liked'] = self.is_liked(instance, user)
             repr['is_favorite'] = self.is_favorite(instance, user)
