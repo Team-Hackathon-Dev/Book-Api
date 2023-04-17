@@ -37,7 +37,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'category_name', 'owner_username', 'images', 'price')
+        fields = '__all__'
 
     @staticmethod
     def is_liked(post, user):
@@ -50,7 +50,9 @@ class PostListSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         repr['likes_count'] = instance.likes.count()
+        repr['liked_users'] = LikeSerializer(instance=instance.likes.all(), many=True).data
         repr['comments_count'] = instance.comments.count()
+        repr['comments'] = CommentSerializer(instance=instance.comments.all(), many=True).data
         user = self.context['request'].user
         if user.is_authenticated:
             repr['is_liked'] = self.is_liked(instance, user)
