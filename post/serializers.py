@@ -37,7 +37,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'category_name', 'owner_username', 'images', 'price')
+        fields = '__all__'
 
     @staticmethod
     def is_liked(post, user):
