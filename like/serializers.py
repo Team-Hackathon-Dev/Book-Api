@@ -26,3 +26,11 @@ class LikedUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ('owner', 'owner.username')
+
+
+class LikeListSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    class Meta:
+        model = Like
+        fields = '__all__'
