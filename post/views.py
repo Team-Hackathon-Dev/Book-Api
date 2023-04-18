@@ -17,8 +17,8 @@ class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     pagination_class = DefaultResultPagination
     filter_backends = (SearchFilter, DjangoFilterBackend)
-    search_fields = ('title',)
-    filters_fields = ('owner', 'category')
+    search_fields = '__all__'
+    filterset_fields = ('owner', 'category')
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
